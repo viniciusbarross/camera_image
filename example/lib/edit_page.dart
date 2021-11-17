@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:example/controller/controllerprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
 
 class EditPhotoPage extends StatefulWidget {
   final File image;
@@ -41,7 +43,8 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
           title: 'Cropper',
         ));
     if (croppedFile != null) {
-      imageFile = croppedFile;
+      Provider.of<ControllerProfile>(context, listen: false).image =
+          croppedFile;
       // context.bloc<PhotoBloc>().add(GetPhoto(imageFile));
       Navigator.pop(context);
       setState(() {});

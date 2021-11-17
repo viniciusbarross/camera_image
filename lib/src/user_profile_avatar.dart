@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class UserProfileAvatar extends StatefulWidget {
   final TextStyle? _notificationCountTextStyle;
   final bool _isActivityIndicatorSmall;
   final Color? _activityIndicatorAndroidColor;
+  final File? _image;
 
   /// [avatarUrl] the uri for the image to be displayed.
   /// [onAvatarTap] called when user taps on the avatar.
@@ -30,7 +33,7 @@ class UserProfileAvatar extends StatefulWidget {
   /// [activityIndicatorAndroidColor] used to set the color for circular progress indicator, only on android.
   UserProfileAvatar(
       {Key? key,
-      required String avatarUrl,
+      String? avatarUrl,
       Function? onAvatarTap,
       AvatarBorderData? avatarBorderData,
       Color? avatarSplashColor,
@@ -38,7 +41,8 @@ class UserProfileAvatar extends StatefulWidget {
       int? notificationCount,
       TextStyle? notificationBubbleTextStyle,
       bool isActivityIndicatorSmall = true,
-      Color? activityIndicatorAndroidColor})
+      Color? activityIndicatorAndroidColor,
+      File? image})
       : _key = key,
         _avatarUrl = avatarUrl,
         _onAvatarTap = onAvatarTap,
@@ -48,7 +52,8 @@ class UserProfileAvatar extends StatefulWidget {
         _notificationCount = notificationCount,
         _notificationCountTextStyle = notificationBubbleTextStyle,
         _isActivityIndicatorSmall = isActivityIndicatorSmall,
-        _activityIndicatorAndroidColor = activityIndicatorAndroidColor;
+        _activityIndicatorAndroidColor = activityIndicatorAndroidColor,
+        _image = image;
 
   @override
   _UserProfileAvatarState createState() => _UserProfileAvatarState();
@@ -118,7 +123,8 @@ class _UserProfileAvatarState extends State<UserProfileAvatar>
             children: [
               Center(
                 child: ConditionalChild(
-                  condition: isNullOrEmpty(widget._avatarUrl),
+                  condition:
+                      isNullOrEmpty(widget._avatarUrl) || widget._image != null,
                   thenBuilder: () => Container(
                     height: widget._radius * 2,
                     width: widget._radius * 2,
@@ -126,10 +132,12 @@ class _UserProfileAvatarState extends State<UserProfileAvatar>
                       minWidth: mainContainerMinSize,
                       minHeight: mainContainerMinSize,
                     ),
-                    child: Image.asset(
-                      Asset.userEmptyAvatar,
-                      fit: BoxFit.fill,
-                    ),
+                    child: widget._image != null
+                        ? Image.file(widget._image!)
+                        : Image.asset(
+                            Asset.userEmptyAvatar,
+                            fit: BoxFit.fill,
+                          ),
                   ),
                   elseBuilder: () => CachedNetworkImage(
                     key: widget._key,
